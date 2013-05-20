@@ -79,7 +79,7 @@ function editrpt(rid) {
 					}
 					comments = '<div style="padding-top:5px"><strong>Current Comments</strong>:<br/>'+comments+'</div>';
 				}
-				var html = '<div class="report"><form id="rptform"><table border="0" cellpadding="0" cellspacing="0"><tr><td colspan="2"><div class="rpt-title">Submitted by <span style="color:#ff6600;font-weight:bold">'+rpt.sender+'</span> on <span style="color:#ff6600;font-weight:bold">'+rpt.date+'</span></div></td></tr><tr><td><div class="rpt-label">Report</div><div><textarea id="report" name="report" class="rpt-ta" readonly="readonly">'+rpt.report+'</textarea></div></td><td><div class="rpt-label">Accused</div><div><textarea id="subject" name="subject" class="rpt-ta" readonly="readonly">'+rpt.accused+'</textarea></div></td></tr><tr><td><div class="rpt-label">District</div><div><select id="dist" name="district" class="rpt-list">'+doptions+'</select><br/>(User reported: <span style="color:#CC0000">'+rpt.district_ff+'</span>)</div></td><td><div class="rpt-label">Amount</div><div><select id="currency" name="currency" class="rpt-list">'+coptions+'</select>&nbsp;<input type="text" id="amount" name="amount" onkeydown="damt(this)" onkeyup="damt(this)" value="'+rpt.amount+'" /><br/>(User reported: <span style="color:#CC0000">'+rpt.amount_ff+'</span>)</div></td></tr><tr><td><div class="rpt-label">Name of Reporter</div><div><textarea id="names" name="names" class="rpt-ta" readonly="readonly">'+rpt.names+'</textarea></div></td><td><div class="rpt-label">Case Category</div><div>'+cathtml+'</div></td></tr><tr><td><div class="rpt-label">Comments</div><div><textarea id="comments" name="comments" class="rpt-ta"></textarea><input type="hidden" name="id" value="'+rid+'" /><input type="hidden" name="csrfmiddlewaretoken" value="'+getCookie('csrftoken')+'" /></div></td><td>'+comments+'</td></tr></table></form></div>';
+				var html = '<div class="report"><form id="rptform"><table border="0" cellpadding="0" cellspacing="0"><tr><td colspan="2"><div class="rpt-title">Submitted by <span style="color:#ff6600;font-weight:bold">'+rpt.sender+'</span> on <span style="color:#ff6600;font-weight:bold">'+rpt.date+'</span></div></td></tr><tr><td><div class="rpt-label">Report</div><div><textarea id="report" name="report" class="rpt-ta" readonly="readonly">'+rpt.report+'</textarea></div></td><td><div class="rpt-label">Accused</div><div><textarea id="subject" name="subject" class="rpt-ta" readonly="readonly">'+rpt.accused+'</textarea></div></td></tr><tr><td><div class="rpt-label">District</div><div><select id="dist" name="district" class="rpt-list">'+doptions+'</select><br/>(User reported: <span style="color:#CC0000">'+rpt.district_ff+'</span>)</div></td><td><div class="rpt-label">Amount</div><div><select id="currency" name="currency" class="rpt-list">'+coptions+'</select>&nbsp;<input type="text" id="amount" name="amount" onkeydown="damt(this)" onkeyup="damt(this)" value="'+rpt.amount+'" /><br/>(User reported: <span style="color:#CC0000">'+rpt.amount_ff+'</span>)</div></td></tr><tr><td><div class="rpt-label">Name of Reporter</div><div><textarea id="names" name="names" class="rpt-ta" readonly="readonly">'+rpt.names+'</textarea></div></td><td><div class="rpt-label">Case Category</div><div>'+cathtml+'</div></td></tr><tr><td><div class="rpt-label">Comments</div><div><textarea id="comments" name="comments" class="rpt-ta"></textarea><input type="hidden" name="id" value="'+rid+'" /><input type="hidden" name="csrfmiddlewaretoken" value="'+getCookie('csrftoken')+'" /></div><div style="padding-top:15px"><input type="checkbox" name="closed" value="close" id="closecb" />&nbsp;<label for="closecb"><span style="color:#ff0000">CLOSE REPORT</span></label></div><div>This report can not be modified once it is closed</div></td><td>'+comments+'</td></tr></table></form></div>';
 				
 				var title = 'User Report Details';
 				var btns = [{text:'Submit', click:function(){ update_rpt(rid); }}]
@@ -214,7 +214,21 @@ function send_() {
 }
 
 function rptsetc() {
-	//alert('setting color!');
+	//return; /* color coding things does not look good */;
+	for(var i=0; i<reports.length; i++) {
+		if(!document.getElementById('rpt_'+reports[i].id)) continue;
+		var tr = (document.getElementById('rpt_'+reports[i].id).parentNode).parentNode;
+		if(reports[i].closed) {
+			tr.style.backgroundColor = '#F7E4E3';	
+		} 
+		else if(reports[i].synced) {
+			tr.style.backgroundColor='#D9FBC0';
+		} else if (reports[i].completed) {
+			//tr.className = 'row1';
+		} else {
+			//tr.className = 'row2';
+		}
+	}
 };
 
 function track_msg_len(f) {

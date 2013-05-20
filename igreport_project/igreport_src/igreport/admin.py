@@ -29,25 +29,6 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
         super(IGReportAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None,)
 
-    def accused(self, obj):
-        text = obj.subject
-        width = ''
-        if text and len(text) > 40:
-            width = '200px'
-
-        style = 'font-size:13px;'
-        if width:
-            style += 'width:%s;' % width
-        if style:
-            style = ' style="%s"' % style
-        if not text:
-            text = '<span style="color:#cc0000">(none)</span>'
-        html = '<div%s>%s</div>' % (style, text)
-        return html
-
-    accused.short_description = 'Accused'
-    accused.allow_tags=True
-
     def report_time(self, obj):
         return obj.datetime.strftime('%d/%m/%Y %H:%M')
 
@@ -70,6 +51,25 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
 
     message.short_description = 'Report'
     message.allow_tags = True
+
+    def accused(self, obj):
+        text = obj.subject
+        width = ''
+        if text and len(text) > 40:
+            width = '200px'
+
+        style = 'font-size:13px;'
+        if width:
+            style += 'width:%s;' % width
+        if style:
+            style = ' style="%s"' % style
+        if not text:
+            text = '<span style="color:#cc0000">(none)</span>'
+        html = '<div%s>%s</div>' % (style, text)
+        return html
+
+    accused.short_description = 'Accused'
+    accused.allow_tags=True
 
     def sender(self, obj):
         msisdn = obj.connection.identity
@@ -111,7 +111,7 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
 
     def options(self, obj):
         html = ''
-        if not obj.synced:
+        if not obj.synced and not obj.closed:
             link = '<a href="" onclick="editrpt(%s);return false;" title="Edit Report"><img src="%s/igreport/img/edit.png" border="0" /></a>&nbsp;&nbsp;' % (obj.id, settings.STATIC_URL)
             html += link
             
@@ -120,7 +120,7 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
         
         html = '<div style="padding-bottom:5px">%s</div>' % html
 
-        if obj.completed and not obj.synced:
+        if obj.completed and not obj.synced and not obj.closed:
             d = dict(id=str(obj.id), amount=str(obj.amount) if obj.amount else '', amountff=obj.amount_freeform or '')
             a = json.dumps( d )
             link = '<a href="" onclick=\'syncit(%s);return false;\' title="Sync Report"><img src="%s/igreport/img/sync.png"></a>&nbsp;&nbsp;' % (a, settings.STATIC_URL)
@@ -153,9 +153,17 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
     
     def changelist_view(self, request, extra_context=None):
         title = 'Reports'
-
-        buttons = [ {'label': 'Refresh', 'link': ''}, {'label': 'All Reports', 'link': '?'}, {'label': 'Completed', 'link': '?completed=1'}, {'label': 'Synced', 'link': '?synced=1'} ]
-        context = {'title': title, 'include_file':'igreport/report.html', 'bottom_js':'rptsetc()', 'buttons': buttons}
+        
+        ids = [ '{id:%s,completed:%s,synced:%s,closed:%s}' % \
+               (obj.id, 'true' if obj.completed else 'false', \
+                'true' if obj.synced else 'false', 'true' if obj.closed else 'false') \
+        for obj in self.queryset(self) ]
+        js = '[%s]' % ','.join(ids)
+        bottom_js = '\nvar reports=%s;\nrptsetc();\n' % js
+        
+        #bottom_js=''
+        buttons = [ dict(label='Refresh', link=''), dict(label='All Reports', link='?'), dict(label='Completed', link='?completed=1'), dict(label='Synced', link='?synced=1'), dict(label='Closed', link='?closed=1') ]
+        context = dict(title=title, include_file='igreport/report.html', bottom_js=bottom_js, buttons=buttons)
         return super(IGReportAdmin, self).changelist_view(request, extra_context=context)
 
 class MessageLogAdmin(admin.ModelAdmin):

@@ -51,6 +51,13 @@ def submit_report(request, report_id):
     
     try:
         report = get_object_or_404(IGReport, pk=long(report_id))
+        
+        if report.synced:
+            raise Exception('This report has already been synced. No changes can be made to it')
+        
+        if report.closed:
+            raise Exception('This report was closed. No changes can be made to it')
+        
         report.categories.clear()
         
         if 'category' in request.POST and request.POST['category']:
@@ -87,6 +94,9 @@ def submit_report(request, report_id):
                 report.amount = float(amount)
             except ValueError:
                 return HttpResponse('Invalid Amount', status=400)
+        
+        if request.POST.has_key('closed'):
+            report.closed = True
             
         report.save()
         
