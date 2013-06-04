@@ -77,17 +77,27 @@ def get_report(request, report_id):
 @never_cache
 def send_sms(request, report_id):
 
-    report = get_object_or_404(IGReport, pk=report_id)
-
     if not request.POST.has_key('text'):
         return HttpResponse('Message not specified', status=400)
+    
+    if not request.POST.has_key('src'):
+        return HttpResponse('Bad request. "src" missing', status=400)
+    
+    src = request.POST['src']
+    if not re.search('^(report|log)$', src):
+        return HttpResponse('Bad request. "src" not valid', status=400)
+
+    if src == 'report':
+        obj = get_object_or_404(IGReport, pk=report_id)
+    else:
+        obj = get_object_or_404(Message, direction='I', pk=report_id)
 
     text = request.POST['text'].strip()
     if not text or len(text) < 2:
         return HttpResponse('Message too short/not valid', status=400)
 
     try:
-        Message.objects.create(direction='O', status='Q', connection=report.connection, text=text)
+        Message.objects.create(direction='O', status='Q', connection=obj.connection, text=text)
     except Exception as err:
         return HttpResponse(err.__str__(), status=500)
 

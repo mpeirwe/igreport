@@ -128,7 +128,7 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
         
         msisdn = obj.connection.identity
         t = (msisdn, obj.id, msisdn, settings.STATIC_URL)
-        html += '<a href="" title="Send SMS to %s" onclick="smsp(%s,\'%s\');return false;"><img src="%s/igreport/img/sms.png" border="0" /></a>' % t
+        html += '<a href="" title="Send SMS to %s" onclick="smsp(%s,\'%s\',\'report\');return false;"><img src="%s/igreport/img/sms.png" border="0" /></a>' % t
 
         return html
 
@@ -167,11 +167,11 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
         return super(IGReportAdmin, self).changelist_view(request, extra_context=context)
 
 class MessageLogAdmin(admin.ModelAdmin):
-    list_display = ['sender', 'message', 'send_date', 'direction', 'status']
-    #date_hierarchy = ['date']
+    list_display = ['sender', 'message', 'send_date', 'direction', 'status', 'options']
     search_fields = ('connection__identity', 'text')
     list_filter = ['date', 'direction', 'status']
     actions = None
+    Media = media.JQueryUIMedia
     change_list_template = 'igreport/change_list.html'
 
     def __init__(self, *args, **kwargs):
@@ -208,6 +208,18 @@ class MessageLogAdmin(admin.ModelAdmin):
 
     send_date.short_description = 'Send Date'
     send_date.admin_order_field = 'date'
+
+    def options(self, obj):
+        if obj.direction=='I':
+            msisdn = obj.connection.identity
+            t = (msisdn, obj.id, msisdn, settings.STATIC_URL)
+            html = '<a href="" title="Send SMS to %s" onclick="smsp(%s,\'%s\',\'log\');return false;"><img src="%s/igreport/img/sms.png" border="0" /></a>' % t
+        else:
+            html = '<span style="color:#ccc">[NONE]</span>'
+        return html
+
+    options.short_description = 'Options'
+    options.allow_tags = True
     
     def has_add_permission(self, request):
         return False
@@ -218,7 +230,7 @@ class MessageLogAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
 
         buttons = [ {'label': 'Go To Reports', 'link': '../igreport/'}, {'label': 'Refresh', 'link': '?'} ]
-        context = {'title': 'All Messages', 'buttons': buttons}
+        context = dict(title='All Messages', buttons=buttons, include_file='igreport/report.html')
         return super(MessageLogAdmin, self).changelist_view(request, extra_context=context)
     
     def change_view(self, request, object_id, extra_context=None):

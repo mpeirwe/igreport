@@ -169,7 +169,7 @@ function syncit(rpt) {
 	r.send('csrfmiddlewaretoken='+getCookie('csrftoken'));
 }
 
-function smsp(id, msisdn) {
+function smsp(id, msisdn, src) {
 	
 	var title = 'Send SMS to ' + msisdn;
 	var btns = [{text:'Send SMS', click:function(){ send_(); }}]
@@ -179,7 +179,7 @@ function smsp(id, msisdn) {
 	    <div class="rpt-label">User Report</div><div style="padding-bottom:20px">' + txt + '</div>\
 	    <div class="rpt-label">SMS Message</div><div><textarea name="message" rows="5" cols="50" class="rpt-ta-general" onkeydown="track_msg_len(this)" onkeyup="track_msg_len(this)"></textarea><br/>\
 	    <input type="text" size="10" id="id_chars" readonly="readonly" value="0 Chars" style="color:#666" />\
-	    <input type="hidden" name="id" value="'+id+'" /><input type="hidden" name="msisdn" value="'+msisdn+'" />\
+	    <input type="hidden" name="src" value="'+src+'" /><input type="hidden" name="id" value="'+id+'" /><input type="hidden" name="msisdn" value="'+msisdn+'" />\
 	    </div>\
 	</div></form>';				
 	document.getElementById('jqpopup').innerHTML = html;
@@ -210,7 +210,7 @@ function send_() {
 			//window.location.replace(window.location);
 		}
 	}
-	r.send('text='+encodeURIComponent(f.message.value)+'&csrfmiddlewaretoken='+getCookie('csrftoken'));	
+	r.send('text='+encodeURIComponent(f.message.value)+'&src='+f.src.value+'&csrfmiddlewaretoken='+getCookie('csrftoken'));	
 }
 
 function rptsetc() {

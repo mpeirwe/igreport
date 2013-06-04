@@ -36,7 +36,7 @@ def print_preview(request, report_id):
             obj = get_object_or_404(Location, pk=r.district_id)
             district = obj.name
         else:
-            district = ''
+            district = '__'
 
         report = dict(accused = r.subject or '(empty)', report = r.report or '(empty)', amount_ff = r.amount_freeform or '(empty)', amount=amount, district_ff=r.district_freeform or '(empty)', district=district, date=r.datetime.strftime('%d/%m/%Y %H:%M'), sender=r.connection.identity, names=r.names or '(empty)', currency=currency, reference_number=r.reference_number)
 
