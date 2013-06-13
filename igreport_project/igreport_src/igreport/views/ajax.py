@@ -125,8 +125,8 @@ def demo_send(request):
         system_url = getattr(settings, 'SYSTEM_URL', 'http://172.16.14.155:8081')
         url = '%s/router/receive/?%s' % (system_url, urllib.urlencode(params))
         
-        #res = urllib2.urlopen(urllib2.Request(url=url))
-        #response = res.read()
+        res = urllib2.urlopen(urllib2.Request(url=url))
+        response = res.read()
         #raise Exception(url)
     except Exception as err:
         return HttpResponse(err.__str__(), status=500)
@@ -157,14 +157,14 @@ def demo_get(request):
             defaults = {} 
         )
         
-        msgs = Message.objects.filter(connection=connection, direction='O', status='S').order_by('-date')[:1]
+        msgs = Message.objects.filter(
+            connection=connection, direction='O', status='S', id__gt=request.GET['id']
+        ).order_by('-date')[:1]
+        
         if not msgs:
             return ajax_success('OK', 'res:{msg:null,id:0}')
         
         msg = msgs[0]
-        if request.GET['id'] == str(msg.id):
-            return ajax_success('OK', 'res:{msg:null,id:0}')
-        
         res = 'res:{msg:%s,id:%s}' % (json.dumps(msg.text), msg.id)
         return ajax_success('OK', res)
     
