@@ -156,13 +156,13 @@ def demo_get(request):
             backend = backend,
             defaults = {} 
         )
-        
+        cid = request.GET['id']
         msgs = Message.objects.filter(
-            connection=connection, direction='O', status='S', id__gt=request.GET['id']
+            connection=connection, direction='O', status='S', id__gt=cid
         ).order_by('-date')[:1]
         
         if not msgs:
-            return ajax_success('OK', 'res:{msg:null,id:0}')
+            return ajax_success('OK', 'res:{msg:null,id:%s}' % cid)
         
         msg = msgs[0]
         res = 'res:{msg:%s,id:%s}' % (json.dumps(msg.text), msg.id)

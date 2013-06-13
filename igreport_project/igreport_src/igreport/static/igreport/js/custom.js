@@ -285,12 +285,11 @@ function demo_get() {
 				var o = eval('('+ r.responseText +')');
 				var res = o.res;
 				
-				if(res.id > 0) {
+				if(res.id != document.getElementById('outid').value) {
 					document.getElementById('msg').value = res.msg;
-				} else {
-					document.getElementById('outid').value = res.id;
-					//alert(ret.id);
+					msgf.readOnly = true;
 				}
+				document.getElementById('outid').value = res.id;
 			}
 			setTimeout(function(){demo_get()}, 2000);
 		}
