@@ -287,7 +287,7 @@ function demo_get() {
 				
 				if(res.id != document.getElementById('outid').value) {
 					document.getElementById('msg').value = res.msg;
-					msgf.readOnly = true;
+					document.getElementById('msg').readOnly = true;
 				}
 				document.getElementById('outid').value = res.id;
 			}
