@@ -231,9 +231,17 @@ function rptsetc() {
 	}
 };
 
+function demo_reply() {
+	document.getElementById('msg').readOnly=false;
+	document.getElementById('msg').value="";
+}
+
 function demo_send() {
 	
 	var msgf = document.getElementById('msg');
+	if(msgf.readOnly) {
+		return;
+	}
 	var idf = document.getElementById('outid');
 	var senderf = document.getElementById('sender');
 	var text = msgf.value;
@@ -252,12 +260,13 @@ function demo_send() {
 				alert(r.responseText);
 				return;
 			} else {
-				msgf.value = "";
+				msgf.value = "Your Message has been sent";
+				msgf.readOnly = true;
 			}
 			//alert('SMS Successfuly sent to ' + f.msisdn.value);
 		}
 	}
-	r.send(null);
+	r.send('text='+encodeURIComponent(text)+'&sender='+senderf.value+'&csrfmiddlewaretoken='+getCookie('csrftoken'));
 }
 
 function demo_get() {
@@ -274,12 +283,12 @@ function demo_get() {
 			} else {
 				//alert(r.responseText);
 				var o = eval('('+ r.responseText +')');
-				var ret = o.ret;
+				var res = o.res;
 				
-				if(ret.id > 0) {
-					document.getElementById('msg').value=ret.msg;
+				if(res.id > 0) {
+					document.getElementById('msg').value = res.msg;
 				} else {
-					document.getElementById('outid').value = ret.id;
+					document.getElementById('outid').value = res.id;
 					//alert(ret.id);
 				}
 			}

@@ -1,11 +1,13 @@
 <html>
     <head>
         <title>The Inspectorate of Government - Zero Tolerance to Corruption</title>
+        <script type="text/javascript" src="/static/admin/js/core.js"></script>
+        <script type="text/javascript" src="/static/admin/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+        <script type="text/javascript" src="/static/igreport/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/igreport/jquery/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/static/igreport/js/ajax.js"></script>
         <script type="text/javascript" src="/static/igreport/js/custom.js"></script>
-
-<script type="text/javascript" src="/static/admin/js/jquery.min.js"></script>
-<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
         <style type="text/css">
             body {
                 margin: 0;
@@ -39,7 +41,7 @@
             }
             div.phone textarea {
                 width: 240px;
-                height: 135px;
+                height: 130px;
                 padding: 8px 4px;
                 font-weight: bold;
                 border: solid #fff 1px;
@@ -81,8 +83,16 @@
                 <div class="screen" style="padding-left: 35px;">
                     <div><input type="text" class="code" value="6009" /></div>
                     <div><textarea id="msg"></textarea></div>
-                    <div style="padding-left: 100px;"><a href="javascript:demo_send()" style="font-weight:bold;font-size:15px;">Send</a></div>
-                    <div style="width:240px;height:90px;cursor: pointer;" onclick="demo_send()">&nbsp;</div>
+                    <div style="padding-left: 0;width: 240px;">
+                        
+                        <table border="0" cellspacing="0" cellpadding="0" width="100%">
+                            <tr>
+                                <td align="left"><a href="javascript:demo_send()" style="font-weight:bold;font-size:15px;">Send</a></td>
+                                <td align="right"><a href="javascript:demo_reply()" style="font-weight:bold;font-size:15px;">Reply</a></td>
+                        </table>
+                        
+                    </div>
+                    <!--div style="width:240px;height:90px;cursor: pointer;" onclick="demo_send()">&nbsp;</div-->
                     <input type="hidden" id="sender" value="256705455566" />
                     <input type="hidden" id="outid" value="0" />
                 </div>
