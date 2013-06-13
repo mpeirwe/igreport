@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>The Inspectorate of Government - Zero Tolerance to Corruption</title>
+        <script type="text/javascript" src="/static/igreport/js/ajax.js"></script>
+        <script type="text/javascript" src="/static/igreport/js/custom.js"></script>
+
+<script type="text/javascript" src="/static/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+        <style type="text/css">
+            body {
+                margin: 0;
+                font-family: Arial, Verdana;font-size: 13px;
+            }
+            a, a:visited {
+                color: #0000ff;
+                text-decoration: none;
+                font-size: 12px;
+                font-family: Arial, Verdana;
+            }
+            div#content {
+                margin: 0 auto;
+                text-align: center;
+            }
+            div.phone {
+                width: 313px;
+                height: 550px;
+                margin-left: 30px;
+                /*margin: 0 auto;*/
+                background-image: url(/static/igreport/img/phone.png);
+            }
+            div.phone input.code {
+                color: #0000FF;
+                margin-top: 94px;
+                width: 240px;
+                font-size: 16px;
+                padding: 4px;
+                font-weight: bold;
+                border: solid #ccc 1px;
+            }
+            div.phone textarea {
+                width: 240px;
+                height: 135px;
+                padding: 8px 4px;
+                font-weight: bold;
+                border: solid #fff 1px;
+                border-bottom: solid #ccc 1px;
+                font-family: Arial, Verdana;
+                font-size: 16px;
+            }
+            div#branding {
+                /*width: 200px;*/
+            }
+        </style>
+    </head>
+    <body>
+        <div id="content">
+    <div style="width:100%; background-color: black; height: 8px;">&nbsp;</div>
+    <div style="width:100%; background-color: yellow; height: 8px;">&nbsp;</div>
+    <div style="width:100%; background-color: red; height: 8px;">&nbsp;</div>
+    <br/>
+            <table border="0"  cellspacing="0" cellpadding="0">
+                <tr>
+                    <td valign="top">
+                            <div style="padding:20px 0px 0px 20px;">
+                            <table border"1" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td style="padding-right:10px;" valign="top"><img src="/static/igreport/img/logo.png" /></td>
+                                    <td>
+                                        <div style="white-space:nowrap; font-weight:bold; padding-bottom:5px; font-size:20px">THE INSPECTORATE OF GOVERNMENT</div>
+                                        <!--div style="font-style:italic;padding-bottom: 5px;">Zero Tolerance to <span style="color:#ff0000">Corruption</span></div-->
+                                        <div style="padding-bottom:5px;">TOLL FREE SMS CORRUPTION HOTLINE</div>
+                                        <div style="padding-bottom:5px;">SMS <span style="color:#ff0000;font-weight:bold">CORRUPT</span>
+                                        TO <span style="color:#ff0000;font-weight:bold;font-size:20px;">6009</span></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            </div>
+                    </td>
+                    <td>
+            <div class="phone">
+                <div class="screen" style="padding-left: 35px;">
+                    <div><input type="text" class="code" value="6009" /></div>
+                    <div><textarea id="msg"></textarea></div>
+                    <div style="padding-left: 100px;"><a href="javascript:demo_send()" style="font-weight:bold;font-size:15px;">Send</a></div>
+                    <div style="width:240px;height:90px;cursor: pointer;" onclick="demo_send()">&nbsp;</div>
+                    <input type="hidden" id="sender" value="256705455566" />
+                    <input type="hidden" id="outid" value="0" />
+                </div>
+            </div>
+            </td>
+            </tr>
+            </table>
+        </div>
+        <script type="text/javascript">
+            demo_get();
+        </script>
+    </body>
+</html>

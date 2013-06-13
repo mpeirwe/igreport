@@ -1,5 +1,6 @@
 import re
 import json
+import urllib, urllib2
 from django.utils import simplejson
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -8,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 from rapidsms.contrib.locations.models import Location, LocationType
 from rapidsms_httprouter.models import Message
+from rapidsms.models import Connection, Backend
 from django.conf import settings
 from igreport.models import IGReport, Currency, Category, Comment
 
@@ -98,6 +100,74 @@ def send_sms(request, report_id):
 
     try:
         Message.objects.create(direction='O', status='Q', connection=obj.connection, text=text)
+    except Exception as err:
+        return HttpResponse(err.__str__(), status=500)
+
+    return ajax_success()
+
+@login_required
+@require_POST
+@never_cache
+def demo_send(request):
+
+    if not request.POST.has_key('text'):
+        return HttpResponse('Message not specified', status=400)
+
+    if not request.POST.has_key('sender'):
+        return HttpResponse('Bad request. "sender" missing', status=400)
+
+    text = request.POST['text'].strip()
+    if not text or len(text) == 0:
+        return HttpResponse('Message too short/not valid', status=400)
+
+    try:
+        params = dict(backend='youganda', dest='6009', message=text, sender=request.POST['sender'])
+        system_url = getattr(settings, 'SYSTEM_URL', 'http://172.16.14.155:8081')
+        url = '%s/router/receive/?%s' % (system_url, urllib.urlencode(params))
+        
+        res = urllib2.urlopen(urllib2.Request(url=url))
+        response = res.read()
+        #raise Exception(response)
+    except Exception as err:
+        return HttpResponse(err.__str__(), status=500)
+
+    return ajax_success()
+
+@login_required
+@require_GET
+@never_cache
+def demo_get(request):
+
+    if not request.GET.has_key('id'):
+        return HttpResponse('ID not specified', status=400)
+
+    if not request.GET.has_key('sender'):
+        return HttpResponse('Bad request. "sender" missing', status=400)
+    
+    sender = request.GET['sender']
+    
+    if not re.search('^256[0-9]{9}$', sender):
+        raise Exception('Bad sender')
+    
+    try:
+        backend, created = Backend.objects.get_or_create(name='youganda', defaults={})
+        connection, created = Connection.objects.get_or_create(
+            identity = sender,
+            backend = backend,
+            defaults = {} 
+        )
+        
+        msgs = Message.objects.filter(connection=connection, direction='O', status='P').order_by('-date')[:1]
+        if not msgs:
+            return ajax_success('OK', 'ret:{msg:null,id:0}')
+        
+        msg = msgs[0]
+        if request.GET['id'] == str(msg.id):
+            return ajax_success('OK', 'ret:{msg:null,id:0}')
+        
+        res = 'res:{msg:%s,id:%s}' % (json.dumps(msg.text), msg.id)
+        return ajax_success('OK', res)
+    
     except Exception as err:
         return HttpResponse(err.__str__(), status=500)
 

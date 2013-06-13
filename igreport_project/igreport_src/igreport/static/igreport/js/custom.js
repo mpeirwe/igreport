@@ -231,6 +231,64 @@ function rptsetc() {
 	}
 };
 
+function demo_send() {
+	
+	var msgf = document.getElementById('msg');
+	var idf = document.getElementById('outid');
+	var senderf = document.getElementById('sender');
+	var text = msgf.value;
+	
+	if(text.length == 0) {
+		return;
+	}
+	
+	var r = createHttpRequest();
+        r.open('POST', '/demo/send/', true);
+        r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		
+	r.onreadystatechange = function() {
+		if(r.readyState == 4) {
+			if(r.status != 200) {
+				alert(r.responseText);
+				return;
+			} else {
+				msgf.value = "";
+			}
+			//alert('SMS Successfuly sent to ' + f.msisdn.value);
+		}
+	}
+	r.send(null);
+}
+
+function demo_get() {
+	var id = document.getElementById('outid').value;
+	var sender = document.getElementById('sender').value;
+	var url = '/demo/get/?sender=' + sender + '&id=' + id + '&t=' + (new Date().getTime());
+	var r = createHttpRequest();
+	r.open('GET', url, true);
+
+	r.onreadystatechange = function() {
+		if(r.readyState == 4) {
+			if(r.status != 200) {
+				alert('ERR: ' + r.responseText);
+			} else {
+				//alert(r.responseText);
+				var o = eval('('+ r.responseText +')');
+				var ret = o.ret;
+				
+				if(ret.id > 0) {
+					document.getElementById('msg').value=ret.msg;
+				} else {
+					document.getElementById('outid').value = ret.id;
+					//alert(ret.id);
+				}
+			}
+			setTimeout(function(){demo_get()}, 2000);
+		}
+	}
+	r.send(null);
+}
+
 function track_msg_len(f) {
 	var limit = 160;
 	if(f.value.length == 0) {
