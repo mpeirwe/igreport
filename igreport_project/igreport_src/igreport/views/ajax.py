@@ -158,7 +158,7 @@ def demo_get(request):
         )
         cid = request.GET['id']
         msgs = Message.objects.filter(
-            connection=connection, direction='O', status='S', id__gt=cid
+            connection=connection, direction='O', id__gt=cid
         ).order_by('-date')[:1]
         
         if not msgs:
