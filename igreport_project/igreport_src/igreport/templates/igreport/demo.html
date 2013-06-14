@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>The Inspectorate of Government - Zero Tolerance to Corruption</title>
+        <title>The Inspectorate of Government - SMS Corruption Hotline</title>
         <script type="text/javascript" src="/static/admin/js/core.js"></script>
         <script type="text/javascript" src="/static/admin/js/jquery.min.js"></script>
         <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
@@ -90,19 +90,29 @@
                                 <td align="left"><a href="javascript:demo_send()" style="font-weight:bold;font-size:15px;">Send</a></td>
                                 <td align="right"><a href="javascript:demo_reply()" style="font-weight:bold;font-size:15px;">Reply</a></td>
                         </table>
-                        
                     </div>
-                    <!--div style="width:240px;height:90px;cursor: pointer;" onclick="demo_send()">&nbsp;</div-->
                     <input type="hidden" id="sender" value="256705455566" />
                     <input type="hidden" id="outid" value="0" />
                 </div>
             </div>
+            <div style="margin-top:5px; padding-bottom:5px; text-align:center;font-size: 12px;">
+                <span style="color:#cc0000">SENDER</span> <input type="text" id="senderf" value="256705455566" maxlength="12" style="padding:4px; width:120px; font-size:13px; font-weight:bold" />
+                <input type="button" value="SET" style="font-size: 12px" onclick="sender_set()"/></div>
             </td>
             </tr>
             </table>
         </div>
         <script type="text/javascript">
             demo_get();
+            function sender_set() {
+                var v = document.getElementById('senderf').value;
+                if(!(/^2567[0-9]{8}$/.test(v))) {
+                    alert('Invalid Sender');
+                    return;
+                }
+                document.getElementById('sender').value = v;
+                alert('Sender has been set to ' + v);
+            }
         </script>
     </body>
 </html>

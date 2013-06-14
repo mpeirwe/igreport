@@ -234,6 +234,7 @@ function rptsetc() {
 function demo_reply() {
 	document.getElementById('msg').readOnly=false;
 	document.getElementById('msg').value="";
+	document.getElementById('msg').focus();
 }
 
 function demo_send() {
@@ -284,10 +285,14 @@ function demo_get() {
 				//alert(r.responseText);
 				var o = eval('('+ r.responseText +')');
 				var res = o.res;
-				
-				if(res.id != document.getElementById('outid').value) {
+				var cid = document.getElementById('outid').value;	
+				if(res.id != cid) {
 					document.getElementById('msg').value = res.msg;
 					document.getElementById('msg').readOnly = true;
+
+					if(cid==0 && res.id>0) {
+						/* if we just loaded the page */
+					}
 				}
 				document.getElementById('outid').value = res.id;
 			}
