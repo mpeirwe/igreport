@@ -5,6 +5,7 @@
 PROJECT_NAME = 'igreport'
 # message to send to user to help us determine in what language we should engage them
 DEFAULT_RESPONSE = 'To report in English, SMS the word "corrupt" to 6009. To report in Iteso, SMS the word "Olimo"'
+SEND_DEFAULT_RESPONSE = True
 REPORT_KEYWORDS = dict(corrupt='eng', corupt='eng', olimo='ite', olim='ite', loopa='lug', lopa='lug')
 DEFAULT_CURRENCY=dict(code='UGX', name='Uganda Shillings')
 CMS_USER = 'cmsuser'

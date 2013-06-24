@@ -1,7 +1,6 @@
 import re
 import string
 import random
-from rapidsms.models import Connection
 
 """
 Get a unique reference number. The generated reference 
@@ -40,3 +39,10 @@ def get_tagline(connection):
         return '\n\nSupported by MTN'
     
     return ''
+
+def truncate_str(value, limit):
+	if not value:
+		return smart_str(value)
+	if len(value) > limit:
+		value = (value[0:limit]) + '..'
+	return value

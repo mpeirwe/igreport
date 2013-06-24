@@ -11,7 +11,8 @@ from rapidsms.contrib.locations.models import Location, LocationType
 from rapidsms_httprouter.models import Message
 from rapidsms.models import Connection, Backend
 from django.conf import settings
-from igreport.models import IGReport, Currency, Category, Comment
+from igreport.models import IGReport, Currency, Category, Comment, DNDList
+from igreport.lib import sms
 
 def ajax_success(msg=None, js_=None):
     if msg is None:
@@ -99,7 +100,12 @@ def send_sms(request, report_id):
         return HttpResponse('Message too short/not valid', status=400)
 
     try:
-        Message.objects.create(direction='O', status='Q', connection=obj.connection, text=text)
+        dndlist = None
+        qs = DNDList.objects.filter(msisdn=obj.connection.identity)
+        if qs.count() > 0:
+            return HttpResponse('Not Sent. %s is in DND List' % obj.connection.identity, status=400)
+        
+        sms.send_sms(dict(connection=obj.connection, text=text))
     except Exception as err:
         return HttpResponse(err.__str__(), status=500)
 

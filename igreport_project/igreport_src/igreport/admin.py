@@ -7,11 +7,29 @@ from django.forms import ModelForm, ModelChoiceField
 from rapidsms_httprouter.models import Message
 from rapidsms.contrib.locations.models import Location
 from igreport.models import IGReport, Currency, UserProfile, Category, MessageLog, Unprocessed
-from igreport import media
+from igreport.models import DNDList
+from igreport import util, media
 from igreport.html.admin import ListStyleAdmin
-
 from igreport.unregister import unregister_apps
 
+class DNDListAdmin(admin.ModelAdmin):
+    list_display = ['msisdn', 'notes_', 'date', 'updated_']
+
+    def date(self, obj):
+        return obj.entry_date.strftime('%d/%m/%Y %H:%M')
+
+    date.short_description = 'Entry Date'
+    date.admin_order_field = 'entry_date'
+
+    def updated_(self, obj):
+        return obj.updated.strftime('%d/%m/%Y %H:%M')
+
+    updated_.short_description = 'Updated'
+    updated_.admin_order_field = 'updated'
+    
+    def notes_(self, obj):
+        return util.truncate_str(obj.notes, 50)
+    
 class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
 
     list_display = ['sender', 'message', 'accused', 'amount_formatted', 'refno', 'report_time', 'options']
@@ -23,7 +41,7 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
     Media = media.JQueryUIMedia
     change_list_template = 'igreport/change_list.html'
     change_list_results_template = 'igreport/change_list_results.html'
-    list_per_page=50
+    list_per_page = 50
 
     def __init__(self, *args, **kwargs):
         super(IGReportAdmin, self).__init__(*args, **kwargs)
@@ -316,5 +334,6 @@ admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(MessageLog, MessageLogAdmin)
 admin.site.register(Unprocessed, UnprocessedAdmin)
+admin.site.register(DNDList, DNDListAdmin)
 
 unregister_apps()

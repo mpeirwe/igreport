@@ -64,6 +64,16 @@ class IGReport(models.Model):
         verbose_name = 'Report'
         verbose_name_plural = 'Reports'
 
+class DNDList(models.Model):
+    entry_date = models.DateTimeField('Entry Date', auto_now_add=True)
+    msisdn = models.CharField('Phone Number', max_length=15, primary_key=True, help_text='The phone number to which messages should not be sent. Number should be in international format, E.g 256712123456')
+    notes = models.CharField('Notes', max_length=255, help_text='Notes about this entry')
+    updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'DND Number'
+        verbose_name_plural = 'DND Numbers'
+
 class Unprocessed(Message):
     class Meta:
         proxy = True

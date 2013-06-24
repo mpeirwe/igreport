@@ -19,6 +19,10 @@ class App(AppBase):
             matches = difflib.get_close_matches(text, settings.REPORT_KEYWORDS.keys(), 1)
 
             if not matches:
+                send_default = getattr(settings, 'SEND_DEFAULT_RESPONSE', True)
+                if not send_default:
+                    return True
+                
                 return False
             
             keyword = matches[0]
