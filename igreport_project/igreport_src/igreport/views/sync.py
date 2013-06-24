@@ -8,10 +8,11 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from igreport.models import IGReport
+from rapidsms_httprouter.models import Message
 from django.utils import simplejson
 from django.conf import settings
+from igreport import responses
 from datetime import date, datetime
-
 
 @require_POST
 @login_required
@@ -71,6 +72,17 @@ def sync_report(request, report_id):
 
         report.synced = True
         report.save()
+        
+        # send user response
+        translations = responses.translations
+        lang = report.connection.contact.language
+        if translations.has_key(lang):
+            response = translations[lang]
+            if response.has_key('SYNC_RESPONSE_MESSAGE'):
+                text = response['SYNC_RESPONSE_MESSAGE'] % {'reference_number':report.reference_number}
+                Message.objects.create(direction='O', status='Q', \
+                connection=report.connection, text=text, application='igreport')
+                
         return HttpResponse('OK', status=200)
     except Exception as err:
         return HttpResponse(err.__str__(), status=500)

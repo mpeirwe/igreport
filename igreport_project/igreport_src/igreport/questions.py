@@ -9,7 +9,8 @@ translations = {
         DISTRICT_QUESTION='Please send the district where the person works ONLY',
         AMOUNT_QUESTION='What was involved (if money, how much)?',
         NAME_QUESTION='What is your Name?',
-        CONFIRMATION_MESSAGE='Your complaint has been recorded. Your Complaint/ref No is %(reference_number)s. For further queries call 0414347387. Thank you'
+        #CONFIRMATION_MESSAGE='Your complaint has been recorded. Your Complaint/ref No is %(reference_number)s. For further queries call 0414347387. Thank you'
+        CONFIRMATION_MESSAGE='Your complaint has been successfully recorded. We shall get back to you shortly.'
     ),
     'ite': dict(
         COMPLAINT_QUESTION='Olimo ecamusana kotoma aitijenar naatitai',

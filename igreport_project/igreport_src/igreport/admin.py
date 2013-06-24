@@ -17,7 +17,7 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
     list_display = ['sender', 'message', 'accused', 'amount_formatted', 'refno', 'report_time', 'options']
     list_filter = ['datetime']
     ordering = ['-datetime']
-    #date_hierarchy = ['datetime'] # causes strange "ImproperlyConfigured" exception
+    date_hierarchy = 'datetime'
     search_fields = ['connection__identity', 'reference_number']
     actions = None
     Media = media.JQueryUIMedia
@@ -171,6 +171,7 @@ class MessageLogAdmin(admin.ModelAdmin):
     search_fields = ('connection__identity', 'text')
     list_filter = ['date', 'direction', 'status']
     actions = None
+    date_hierarchy = 'date'
     Media = media.JQueryUIMedia
     change_list_template = 'igreport/change_list.html'
 
@@ -238,7 +239,7 @@ class MessageLogAdmin(admin.ModelAdmin):
 
 class UnprocessedAdmin(admin.ModelAdmin):
     list_display = ['sender', 'message', 'send_date']
-    #date_hierarchy = ['date']
+    date_hierarchy = 'date'
     search_fields = ('connection__identity', 'text')
     list_filter = ['date']
     actions = None
