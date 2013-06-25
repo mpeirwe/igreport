@@ -2,6 +2,7 @@
 # vim: ai ts=4 sts=4 et sw=4
 # encoding=utf-8
 
+import logging
 import urllib2
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -13,6 +14,8 @@ from django.utils import simplejson
 from django.conf import settings
 from igreport import responses
 from datetime import date, datetime
+
+log = logging.getLogger(__name__)
 
 @require_POST
 @login_required
@@ -42,6 +45,9 @@ def sync_report(request, report_id):
     if not report.completed:
         return HttpResponse('Report incomplete', status=400)
     
+    report_data = None
+    json_response = None
+    
     try:
         report_data = { \
             'accused': report.subject,
@@ -68,6 +74,7 @@ def sync_report(request, report_id):
         json_object = simplejson.loads(json_response)
         
         if (json_object['result'] != 'OK'):
+            log.info('DATA [[ %s ]] RESPONSE [[ %s ]]' % (report_data, json_response))
             return HttpResponse(json_object['message'], status={'PD':403, 'RC':404, 'IE':500}[json_object['result']])
 
         report.synced = True
@@ -85,4 +92,6 @@ def sync_report(request, report_id):
                 
         return HttpResponse('OK', status=200)
     except Exception as err:
+        log.exception(err.__str__())
+        log.info('DATA [[ %s ]] RESPONSE [[ %s ]]' % (report_data, json_response))
         return HttpResponse(err.__str__(), status=500)
