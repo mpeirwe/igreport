@@ -247,7 +247,7 @@ function create_report(id, msisdn) {
 				alert('ERR: ' + r.responseText);
 			} else {
 				//alert(r.responseText);
-                alert('A report has been successfuly created. Please complete it from the reports page')
+                alert('A report has been successfuly created. Reference No is: ' + r.responseText);
 			}
 		}
 	}

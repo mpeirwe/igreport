@@ -14,6 +14,7 @@ from rapidsms_httprouter.models import Message
 from rapidsms.models import Connection, Backend
 from django.conf import settings
 from igreport.models import IGReport, Currency, Category, Comment, DNDList
+from igreport import util
 from igreport.lib import sms
 
 def ajax_success(msg=None, js_=None):
@@ -42,9 +43,11 @@ def create_report(request, message_id):
             report.save()
             
             report.datetime = message.date
+            report.reference_number = util.get_reference_number(report.id)
             report.save()
             comment = 'Created from user SMS: %s' % message.text
             Comment.objects.create(report=report, user=request.user, comment=comment)
+            return HttpResponse(report.reference_number, status=200)
     except Exception as err:
         if txn: transaction.rollback()
         return HttpResponse(err.__str__(), status=500)
