@@ -1,6 +1,8 @@
 import re
 import json
+import datetime
 import urllib, urllib2
+from django.db import transaction
 from django.utils import simplejson
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -23,6 +25,31 @@ def ajax_success(msg=None, js_=None):
     else:
         js = '{error:false, msg:"%s", %s}' % (msg, js_)
     return HttpResponse(js, mimetype='text/plain', status=200)
+
+@require_GET
+@never_cache
+@login_required
+def create_report(request, message_id):
+    txn = False
+    try:
+        message = get_object_or_404(Message, direction='I', pk=message_id)
+        txn = True
+        with transaction.commit_on_success():
+            report = IGReport(
+                connection=message.connection,
+                report=message.text
+            )
+            report.save()
+            
+            report.datetime = message.date
+            report.save()
+            comment = 'Created from user SMS: %s' % message.text
+            Comment.objects.create(report=report, user=request.user, comment=comment)
+    except Exception as err:
+        if txn: transaction.rollback()
+        return HttpResponse(err.__str__(), status=500)
+
+    return ajax_success()
 
 @login_required
 @require_GET

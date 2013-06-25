@@ -192,7 +192,8 @@ class MessageLogAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     Media = media.JQueryUIMedia
     change_list_template = 'igreport/change_list.html'
-
+    Media = media.JQueryUIMedia
+    
     def __init__(self, *args, **kwargs):
         super(MessageLogAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None,)
@@ -218,6 +219,9 @@ class MessageLogAdmin(admin.ModelAdmin):
         if style:
             style = ' style="%s"' % style
         html = '<div id="rpt_%s"%s>%s</div>' % (obj.id, style, text)
+        
+        if obj.direction == 'I':
+            html += '<div style="padding-top:7px"><a href="" onclick="create_report(%s,\'%s\');return false;" style="color:#999">[Create Report]</a></div>' % (obj.id, obj.connection.identity)
         return html
     
     message.allow_tags='True'
@@ -232,7 +236,12 @@ class MessageLogAdmin(admin.ModelAdmin):
         if obj.direction=='I':
             msisdn = obj.connection.identity
             t = (msisdn, obj.id, msisdn, settings.STATIC_URL)
-            html = '<a href="" title="Send SMS to %s" onclick="smsp(%s,\'%s\',\'log\');return false;"><img src="%s/igreport/img/sms.png" border="0" /></a>' % t
+            links = list()
+            links.append( '<a href="" title="Send SMS to %s" onclick="smsp(%s,\'%s\',\'log\');return false;"><img src="%s/igreport/img/sms.png" border="0" /></a>' % t)
+            
+            #t = (obj.id, settings.STATIC_URL)
+            #links.append( '<a href="" onclick="create_report(%s);return false;"><img src="%s/igreport/img/createreport.png"/></a>' % t)
+            html = '&nbsp;'.join(links)
         else:
             html = '<span style="color:#ccc">[NONE]</span>'
         return html

@@ -19,7 +19,7 @@ admin.autodiscover()
 from igreport.views.test import check_progress
 from igreport.views.messages import show_messages
 from igreport.views.reports import show_reports, submit_report
-from igreport.views.ajax import get_report, send_sms, demo_send, demo_get
+from igreport.views.ajax import create_report, get_report, send_sms, demo_send, demo_get
 from igreport.views.sync import sync_report
 from igreport.views.printer import print_preview
 from igreport.views.demo import demo_view
@@ -48,6 +48,7 @@ urlpatterns = patterns('',
     url('^igreports/(?P<identity>\d{7,20})/$', show_reports),
     url('^igreports/(?P<report_id>\d*)/$', submit_report),
     url('^igreports/(?P<report_id>\d*)/sync/$', sync_report),
+    url('^igreports/(?P<message_id>\d*)/createreport/$', create_report),
     url('^igreports/(?P<report_id>\d*)/getreport/$', get_report),
     url('^igreports/(?P<report_id>\d*)/print/$', print_preview),
     url('^igreports/(?P<report_id>\d*)/sms/$', send_sms),

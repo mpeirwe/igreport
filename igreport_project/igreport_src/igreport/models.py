@@ -59,6 +59,7 @@ class IGReport(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=26, null=True)
     currency = models.ForeignKey(Currency, null=True, blank=True)
     names = models.TextField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'Report'
