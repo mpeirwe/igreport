@@ -1,3 +1,4 @@
+import re
 import json
 import locale
 from django.conf import settings
@@ -141,6 +142,8 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
         if obj.completed and not obj.synced and not obj.closed:
             d = dict(id=str(obj.id), amount=str(obj.amount) if obj.amount else '', amountff=obj.amount_freeform or '')
             a = json.dumps( d )
+            if re.search("'", a):
+                a = re.compile("'").sub("", a)
             link = '<a href="" onclick=\'syncit(%s);return false;\' title="Sync Report"><img src="%s/igreport/img/sync.png"></a>&nbsp;&nbsp;' % (a, settings.STATIC_URL)
             html += link
         

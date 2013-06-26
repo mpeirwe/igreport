@@ -14,6 +14,7 @@ from django.utils import simplejson
 from django.conf import settings
 from igreport import responses
 from datetime import date, datetime
+from django.utils.encoding import smart_str
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ def sync_report(request, report_id):
     
     try:
         report_data = { \
-            'accused': report.subject,
+            'accused': smart_str(report.subject),
             'accused_gender': 'N',  # don't collect gender
             'accused_ent_type': 'P',  # don't collect type
             'district': report.district.name,
@@ -58,8 +59,8 @@ def sync_report(request, report_id):
             'username': settings.CMS_USER,
             'password': settings.CMS_PASSWORD,
             'complainant': report.connection.identity,
-            'report': report.report,
-            'reference_number': report.reference_number,
+            'report': smart_str(report.report),
+            'reference_number': smart_str(report.reference_number),
             'complaint_date': datetime.strftime(report.datetime, '%Y/%m/%d'),
         }
         if report.amount > 0:
