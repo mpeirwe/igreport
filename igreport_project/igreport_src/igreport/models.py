@@ -42,6 +42,28 @@ class Currency(models.Model):
         verbose_name = 'Currency'
         verbose_name_plural = 'Currencies'
 
+class Report(models.Model):
+    connection = models.ForeignKey(Connection)
+    completed = models.BooleanField(default=False)
+    synced = models.BooleanField(default=False)
+    closed = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, verbose_name='Report Date')
+    reference_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    keyword = models.TextField(blank=True, null=True, default=None)
+    report = models.TextField()
+    subject = models.TextField(blank=True, null=True, default=None)
+    district_freeform = models.TextField(null=True, blank=True)
+    district = models.ForeignKey(Location, null=True, default=None)
+    amount_freeform = models.TextField(null=True, blank=True)
+    amount = models.DecimalField(decimal_places=2, max_digits=26, null=True)
+    currency = models.ForeignKey(Currency, null=True, blank=True)
+    names = models.TextField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Pending Report'
+        verbose_name_plural = 'Pending Reports'
+
 class IGReport(models.Model):
     connection = models.ForeignKey(Connection)
     completed = models.BooleanField(default=False)

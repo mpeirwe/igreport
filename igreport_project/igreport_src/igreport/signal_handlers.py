@@ -8,15 +8,14 @@ from script.utils.handling import find_closest_match, find_best_response
 from script.models import ScriptSession
 from rapidsms.contrib.locations.models import Location
 from rapidsms_httprouter.models import Message
-from igreport.questions import translations
 from igreport import util
 from poll.models import Poll
 
 def handle_report(**kwargs):
-    from .models import IGReport
-
+    from .models import Report
+    
     connection = kwargs['connection']
-    report = IGReport.objects.filter(connection=connection).latest('datetime')
+    report = Report.objects.filter(connection=connection).latest('datetime')
     language = report.connection.contact.language
     slug = 'hotline_script_%s' % language
 
@@ -34,6 +33,8 @@ def handle_report(**kwargs):
     report.report = response if response else ''
     report.subject = find_best_response(session, accused_poll)
     report.amount_freeform = find_best_response(session, amount_poll)
+    if report.amount_freeform and re.search('^[0-9]+$', report.amount_freeform):
+        report.amount = float(report.amount_freeform)
     report.names = find_best_response(session, names_poll)
     connection.contact.name = report.names if (report.names and len(report.names)<=100) else connection.identity
     
@@ -55,15 +56,13 @@ def handle_report(**kwargs):
     
     connection.contact.save()
     report.save()
-    text = (translations[connection.contact.language]['CONFIRMATION_MESSAGE'] % {'reference_number':report.reference_number})
-    text += util.get_tagline(connection)
-
-    Message.objects.create(\
-        direction='O', \
-        status='Q', \
-        connection=connection, \
-        application='script', \
-        text=text)
+    
+    if report.report and report.subject:
+        from .lib import reports
+        reports.accept_report(report.id)
+    else:
+        # requires manual acceptance
+        pass
 
 def igreport_pre_save(sender, **kwargs):
     instance = kwargs['instance']

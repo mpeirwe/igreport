@@ -7,10 +7,11 @@ from django.core.exceptions import PermissionDenied
 from django.forms import ModelForm, ModelChoiceField
 from rapidsms_httprouter.models import Message
 from rapidsms.contrib.locations.models import Location
-from igreport.models import IGReport, Currency, UserProfile, Category, MessageLog, Unprocessed
+from igreport.models import Report, IGReport, Currency, UserProfile, Category, MessageLog, Unprocessed
 from igreport.models import DNDList
 from igreport import util, media
 from igreport.html.admin import ListStyleAdmin
+from igreport.report_admin import ReportAdmin
 from igreport.unregister import unregister_apps
 
 class DNDListAdmin(admin.ModelAdmin):
@@ -134,7 +135,7 @@ class IGReportAdmin(admin.ModelAdmin, ListStyleAdmin):
             link = '<a href="" onclick="editrpt(%s);return false;" title="Edit Report"><img src="%s/igreport/img/edit.png" border="0" /></a>&nbsp;&nbsp;' % (obj.id, settings.STATIC_URL)
             html += link
             
-        link = '<a href="/igreports/%s/print/" title="Print Report" target="_blank"><img src="%s/igreport/img/print.png"></a><br/>' % (obj.id, settings.STATIC_URL)
+        link = '<a href="/igreports/%s/print/igreport/" title="Print Report" target="_blank"><img src="%s/igreport/img/print.png"></a><br/>' % (obj.id, settings.STATIC_URL)
         html += link
         
         html = '<div style="padding-bottom:5px">%s</div>' % html
@@ -339,7 +340,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class CurrencyAdmin(admin.ModelAdmin):
     list_display = ['code', 'name']
-    
+
+admin.site.register(Report, ReportAdmin)    
 admin.site.register(IGReport, IGReportAdmin)
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)

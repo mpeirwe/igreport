@@ -3,15 +3,17 @@
 # encoding=utf-8
 
 import re
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 
 from django.template import RequestContext
-from igreport.models import IGReport, Category, Currency
+from igreport.models import IGReport, Report, Category, Currency
 from igreport.models import UserProfile
+from igreport import util
+from igreport.lib import reports
 
 from rapidsms.contrib.locations.models import Location
 from datetime import datetime
@@ -105,3 +107,11 @@ def submit_report(request, report_id):
     
     return HttpResponse('OK', status=200)
 
+@require_GET
+@login_required
+def accept_report(request, report_id):
+    error = reports.accept_report(report_id)
+    if error:
+        return HttpResponse(error, status=400)
+    
+    return HttpResponseRedirect('/admin/igreport/igreport/')    

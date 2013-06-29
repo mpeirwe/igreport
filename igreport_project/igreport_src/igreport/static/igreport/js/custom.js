@@ -275,9 +275,9 @@ function demo_send() {
 	}
 	
 	var r = createHttpRequest();
-        r.open('POST', '/demo/send/', true);
-        r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		
+	r.open('POST', '/demo/send/', true);
+    r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
 	r.onreadystatechange = function() {
 		if(r.readyState == 4) {
 			if(r.status != 200) {
@@ -287,7 +287,6 @@ function demo_send() {
 				msgf.value = "Your Message has been sent";
 				msgf.readOnly = true;
 			}
-			//alert('SMS Successfuly sent to ' + f.msisdn.value);
 		}
 	}
 	r.send('text='+encodeURIComponent(text)+'&sender='+senderf.value+'&csrfmiddlewaretoken='+getCookie('csrftoken'));

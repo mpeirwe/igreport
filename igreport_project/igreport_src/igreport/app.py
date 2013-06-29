@@ -7,7 +7,7 @@ from rapidsms.apps.base import AppBase
 from script.models import ScriptProgress, Script
 from rapidsms.models import Contact
 from django.conf import settings
-from .models import IGReport
+from .models import Report
 
 class App(AppBase):
     
@@ -30,7 +30,7 @@ class App(AppBase):
             slug_name = 'hotline_script_%s' % language
             
             ScriptProgress.objects.create(script=Script.objects.get(slug=slug_name), connection=message.connection)
-            report = IGReport.objects.create(connection=message.connection, keyword=message.text)
+            report = Report.objects.create(connection=message.connection, keyword=message.text)
             contact = Contact(name=message.connection.identity, language=language)
             contact.save()
             report.connection.contact = contact

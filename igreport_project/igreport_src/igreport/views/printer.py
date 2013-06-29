@@ -1,5 +1,8 @@
+# vim: ai ts=4 sts=4 et sw=4
+# encoding=utf-8
 from django.conf import settings
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
@@ -7,15 +10,20 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.cache import never_cache
 from rapidsms.contrib.locations.models import Location
-from igreport.models import IGReport, Currency
+from igreport.models import IGReport, Report, Currency
 
 @login_required
 @require_GET
 @never_cache
-def print_preview(request, report_id):
+def print_preview(request, report_id, model):
 
     try:
-        r = get_object_or_404(IGReport, pk=report_id)
+        if model == 'igreport':
+            r = get_object_or_404(IGReport, pk=report_id)
+        elif model == 'report':
+            r = get_object_or_404(Report, pk=report_id)
+        else:
+            raise PermissionDenied
         
         default_currency, created = Currency.objects.get_or_create(code=settings.DEFAULT_CURRENCY['code'], defaults=dict(name=settings.DEFAULT_CURRENCY['name']))
         

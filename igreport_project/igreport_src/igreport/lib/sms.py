@@ -1,3 +1,5 @@
+# vim: ai ts=4 sts=4 et sw=4
+# encoding=utf-8
 from igreport.models import DNDList
 from rapidsms.models import Connection
 from rapidsms_httprouter.models import Message
