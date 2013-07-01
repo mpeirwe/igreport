@@ -15,7 +15,10 @@ def handle_report(**kwargs):
     from .models import Report
     
     connection = kwargs['connection']
-    report = Report.objects.filter(connection=connection).latest('datetime')
+    try:
+        report = Report.objects.filter(connection=connection).latest('datetime')
+    except Exception as err:
+        return
     language = report.connection.contact.language
     slug = 'hotline_script_%s' % language
 
