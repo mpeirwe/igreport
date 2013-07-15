@@ -59,6 +59,7 @@ def sync_report(request, report_id):
             'username': settings.CMS_USER,
             'password': settings.CMS_PASSWORD,
             'complainant': report.connection.identity,
+            'complainant_names': report.names if report.names else '',
             'report': smart_str(report.report),
             'reference_number': smart_str(report.reference_number),
             'complaint_date': datetime.strftime(report.datetime, '%Y/%m/%d'),
