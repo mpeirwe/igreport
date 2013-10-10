@@ -13,6 +13,7 @@ from rapidsms_httprouter.models import Message
 from django.utils import simplejson
 from django.conf import settings
 from igreport import responses
+from igreport.models import Comment
 from datetime import date, datetime
 from django.utils.encoding import smart_str
 
@@ -61,14 +62,23 @@ def sync_report(request, report_id):
             'complainant': report.connection.identity,
             'complainant_names': report.names if report.names else '',
             'report': smart_str(report.report),
+            'what_was_involved': smart_str(report.amount_freeform), 
             'reference_number': smart_str(report.reference_number),
             'complaint_date': datetime.strftime(report.datetime, '%Y/%m/%d'),
         }
         if report.amount > 0:
             report_data['amount'] = report.amount
 
-        report_data = simplejson.dumps(report_data)
+        qs = Comment.objects.filter(report=report)
+        comments = list()
+        for c in qs:
+            if not c.comment: continue
+            comments.append(c.comment)
+        if comments:
+            report_data['comments'] = comments
 
+        report_data = simplejson.dumps(report_data)
+        
         cms_url = settings.CMS_URL
         req = urllib2.Request(cms_url, report_data)
         response = urllib2.urlopen(req)
