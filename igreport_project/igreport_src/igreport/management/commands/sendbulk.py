@@ -1,5 +1,6 @@
 # vim: ai ts=4 sts=4 et sw=4
 # encoding=utf-8
+import datetime
 from django.core.management.base import BaseCommand
 from rapidsms.models import Connection, Backend
 from igreport.models import *
@@ -13,7 +14,7 @@ class Command(BaseCommand):
             # Load the DND List
             dndlist = [dnd.msisdn for dnd in DNDList.objects.all()]
             backend, created = Backend.objects.get_or_create(name='youganda', defaults={})
-            qs = BulkMessage.objects.filter(status='PENDING')[:1]
+            qs = BulkMessage.objects.filter(status='PENDING', send_time__lte=datetime.datetime.now())[:1]
             
             for msg in qs:
                 self.send_message(msg, backend, dndlist)
