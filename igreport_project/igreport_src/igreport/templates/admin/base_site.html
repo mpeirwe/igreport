@@ -38,10 +38,13 @@
 {% block nav-global %}{% endblock %}
 {% block footer %}
         <div id="footer">Copyright (c) Inspectorate of Government - www.igg.go.ug</div>
-<script>
+<script type="text/javascript">
 var l = document.getElementById('user-tools').getElementsByTagName('a');
 for(var i=0; i<l.length; i++) {
 	l[i].style.color = '#000';
 }
+{% if bottom_js %}
+{{ bottom_js|safe }}
+{% endif %}
 </script>
 {% endblock %}

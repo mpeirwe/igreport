@@ -97,6 +97,35 @@ class DNDList(models.Model):
         verbose_name = 'DND Number'
         verbose_name_plural = 'DND Numbers'
 
+class BulkMessage(models.Model):
+    entry_date = models.DateTimeField('Entry Date', auto_now_add=True)
+    message = models.TextField('Message', help_text='The SMS message to send')
+    status = models.CharField('Status', max_length=20, default='PENDING', editable=False, \
+        choices=(('PENDING','PENDING'),('PROCESSING','PROCESSING'),('SENT','SENT'), ('CANCELED','CANCELED')))
+    send_time = models.DateTimeField('Send Time', help_text='Specify the date/time when this message will be sent')
+    notes = models.CharField('Notes', max_length=255, null=True, blank=True, help_text='Optional notes about this message')
+    updated = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.message, self.status)
+
+    class Meta:
+        verbose_name = 'Bulk Message'
+        verbose_name_plural = 'Bulk Messages'
+        
+class BulkRecipient(models.Model):
+    entry_date = models.DateTimeField('Entry Date', auto_now_add=True)
+    msisdn = models.TextField('MSISDN', max_length=20)
+    message = models.ForeignKey(BulkMessage, editable=False)
+    status = models.CharField('Status', max_length=20, default='PENDING', editable=False, \
+        choices=(('PENDING','PENDING'),('SENT','SENT')))    
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Recipient'
+        verbose_name_plural = 'Recipients'
+        unique_together = ('msisdn', 'message')
+    
 class Unprocessed(Message):
     class Meta:
         proxy = True

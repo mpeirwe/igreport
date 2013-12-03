@@ -337,6 +337,23 @@ function track_msg_len(f) {
 	document.getElementById('id_chars').value = f.value.length + ' Chars';
 };
 
+function attach_counter(f) {
+        var ta = document.getElementById(f);
+        var p = ta.parentNode;
+        var d = document.createElement('div');
+        with(d.style) {
+                //width = '200px';
+                paddingTop='5px';
+				margin='0 0 0 110px';// for django 1.3 default skin
+        };
+        d.innerHTML = '<input type="text" id="id_chars" class="vTextField" style="width:100px" readonly="readonly" value="' +ta.value.length + ' Chars" />';
+        p.appendChild(d);
+        // attach onkey(up|down) events to
+        addEventHandler(ta, 'keydown', function(){ track_msg_len(ta); } );
+        addEventHandler(ta, 'keyup', function(){ track_msg_len(ta); } );
+};
+
+
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {

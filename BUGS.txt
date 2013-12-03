@@ -1,0 +1,54 @@
+Issues Discovered
+=================
+
+1. Exception when ScriptSession does not Exist. Resolved by patch below
+
+===================
+rapidsms_script$ git diff script/managers.py
+diff --git a/script/managers.py b/script/managers.py
+index 49ff9ed..652be95 100644
+--- a/script/managers.py
++++ b/script/managers.py
+@@ -108,8 +108,10 @@ class ScriptProgressQuerySet(QuerySet):
+         from script.models import ScriptSession
+         spses = self
+         for sp in spses:
+-            session = ScriptSession.objects.filter(script=script, connection=sp.connection, end_time=None).latest(
+-                'start_time')
++           qs_ = ScriptSession.objects.filter(script=script, connection=sp.connection, end_time=None)
++           if qs_.count() == 0:
++               continue
++            session = qs_.latest('start_time')
+             session.end_time = datetime.datetime.now()
+             session.save()
+             script_progress_was_completed.send(sender=sp, connection=sp.connection)
+
+===================
+
+2. Sep 24th 2013 - Caching in incoming SMS receiving view. Successive similar requests would be ignored. Resolved by patch below
+
+===================
+..rapidsms_httprouter_src$ git diff rapidsms_httprouter/views.py
+diff --git a/rapidsms_httprouter/views.py b/rapidsms_httprouter/views.py
+index 710ac61..40b00da 100644
+--- a/rapidsms_httprouter/views.py
++++ b/rapidsms_httprouter/views.py
+@@ -20,6 +20,8 @@ from .models import Message
+ from .router import get_router
+ from.tasks import handle_incoming
+ 
++from django.views.decorators.cache import never_cache
++
+ class SecureForm(forms.Form):
+     """
+     Abstracts out requirement of a password.  If you have a password set
+@@ -43,6 +45,7 @@ class MessageForm(SecureForm):
+     message = forms.CharField()
+     echo = forms.BooleanField(required=False)
+ 
++@never_cache
+ def receive(request):
+     """
+     Takes the passed in message.  Creates a record for it, and passes it through
+
+===================

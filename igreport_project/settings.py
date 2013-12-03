@@ -106,7 +106,7 @@ SMS_APPS = [
 
 STATIC_ROOT = '/opt/static/'
 STATIC_URL = '/static'
-
+FILE_UPLOAD_HANDLERS=('django.core.files.uploadhandler.TemporaryFileUploadHandler',)
 AUTH_PROFILE_MODULE = 'igreport.UserProfile'
 LOCATION_POLL_VALID_TYPES = ['district']
 # List of finder classes that know how to find static files in

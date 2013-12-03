@@ -1,3 +1,5 @@
+# vim: ai ts=4 sts=4 et sw=4
+# encoding=utf-8
 import re
 import json
 import locale
@@ -7,11 +9,12 @@ from django.core.exceptions import PermissionDenied
 from django.forms import ModelForm, ModelChoiceField
 from rapidsms_httprouter.models import Message
 from rapidsms.contrib.locations.models import Location
-from igreport.models import Report, IGReport, Currency, UserProfile, Category, MessageLog, Unprocessed
+from igreport.models import *
 from igreport.models import DNDList
 from igreport import util, media
 from igreport.html.admin import ListStyleAdmin
 from igreport.report_admin import ReportAdmin
+from igreport.ui.bulksms import *
 from igreport.unregister import unregister_apps
 
 class DNDListAdmin(admin.ModelAdmin):
@@ -349,5 +352,7 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(MessageLog, MessageLogAdmin)
 admin.site.register(Unprocessed, UnprocessedAdmin)
 admin.site.register(DNDList, DNDListAdmin)
+admin.site.register(BulkMessage, BulkMessageAdmin)
+admin.site.register(BulkRecipient, BulkRecipientAdmin)
 
 unregister_apps()

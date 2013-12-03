@@ -1,6 +1,22 @@
+# vim: ai ts=4 sts=4 et sw=4
+# encoding=utf-8
 import re
+import xlrd
 import string
 import random
+from django.utils.encoding import smart_str
+from igreport import log
+
+def error(message=None, code=None, log_error=False):
+    if message is None:
+        message = 'An error occured'
+    if log_error:
+        log.error(message)
+    
+    return dict(error=True, message=message, code=code)
+
+def success(res=None):
+    return dict(error= False, result= res)
 
 """
 Get a unique reference number. The generated reference 
@@ -46,3 +62,44 @@ def truncate_str(value, limit):
 	if len(value) > limit:
 		value = (value[0:limit]) + '..'
 	return value
+
+def import_contacts_from_xls_file(request, form):
+    """
+    Extract a list of phone number from an Excel sheet
+    
+    @param object request           HTTP request var
+    @param object form              HTTP form var
+    """
+    try:
+        msisdns = list()
+        if not request.FILES.has_key('recipients_file'):
+            return success()
+
+        file = request.FILES['recipients_file']
+        path = file.temporary_file_path()
+        index = 0 # sheet number
+
+        book = xlrd.open_workbook(filename=path, logfile='/tmp/xls.log')
+        sheet = book.sheet_by_index(index)
+
+        for i in range(1, sheet.nrows):
+            row = sheet.row(i)
+            number = smart_str(row[0].value)
+            number = number.lstrip()
+
+            if not number:
+                # XXXX not a valid number
+                continue
+            msisdns.append(number)
+
+        if not msisdns:
+            return error('No valid phone number was found in the uploaded file')
+
+        return success(msisdns)
+
+    except Exception as err:
+        log.exception()
+        return error( err.__str__() )
+
+def import_recipients_from_xls_file(request, form):
+    return import_contacts_from_xls_file(request, form)
