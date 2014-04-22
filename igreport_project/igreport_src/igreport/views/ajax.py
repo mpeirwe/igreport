@@ -2,19 +2,21 @@ import re
 import json
 import datetime
 import urllib, urllib2
+from django.db.models import Q
 from django.db import transaction
 from django.utils import simplejson
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from rapidsms.contrib.locations.models import Location, LocationType
 from rapidsms_httprouter.models import Message
 from rapidsms.models import Connection, Backend
 from django.conf import settings
 from igreport.models import IGReport, Currency, Category, Comment, DNDList
-from igreport import util
+from igreport import util, log
 from igreport.lib import sms
 
 def ajax_success(msg=None, js_=None):
@@ -26,6 +28,10 @@ def ajax_success(msg=None, js_=None):
     else:
         js = '{error:false, msg:"%s", %s}' % (msg, js_)
     return HttpResponse(js, mimetype='text/plain', status=200)
+
+def ajax_error(msg):
+    js = dict(error=True, msg=msg)
+    return HttpResponse(json.dumps(js), mimetype='text/plain', status=200)
 
 @require_GET
 @never_cache
@@ -208,3 +214,73 @@ def demo_get(request):
         return HttpResponse(err.__str__(), status=500)
 
     return ajax_success()
+
+@login_required
+@require_POST
+@csrf_exempt
+def create_district(request):
+    """
+    Create new district
+    """
+    try:
+        if not request.POST.has_key('name'):
+            return ajax_error('District not specified')
+        
+        name = request.POST['name']
+        qs = Location.objects.filter(type='district', name__iexact=name)
+        if qs.count() > 0:
+            return ajax_error('District already exists')
+    
+        tree_parent = Location.objects.get(type='country', name='Uganda')
+        location_type = LocationType.objects.get(slug='district')
+        district = Location(name=name.title(), type=location_type, tree_parent=tree_parent)
+        
+        district.save()
+        log.info('User "%s" Added new district "%s"' % \
+            (request.user.username, district.name))
+        
+    except Exception as err:
+        return ajax_error(err.__str__())
+
+    return HttpResponse( json.dumps(dict(error=False, msg='OK')) )
+
+@login_required
+@require_POST
+@csrf_exempt
+def edit_district(request, district_id):
+    """
+    Edit District
+    """
+    try:
+        if not request.POST.has_key('name'):
+            return ajax_error('District name not specified')
+        
+        name = request.POST['name']
+        qs = Location.objects.filter(pk=district_id)
+        
+        if qs.count() == 0:
+            return ajax_error('Invalid district identifier')
+        
+        district = qs[0]
+        original_name = district.name
+        
+        count = IGReport.objects.filter(district=district).count()
+        if count > 0:
+            return ajax_error('You can not modify this district ' +
+                'because it is associated with %s report(s)' % count)
+        
+        qs = Location.objects.filter(~Q(pk=district_id), type='district', name__iexact=name)
+        
+        if qs.count() > 0:
+            return ajax_error('District already exists')
+
+        district.name = name.title()
+        district.save()
+        
+        log.info('User "%s" Changed district "%s" to "%s"' % \
+            (request.user.username, original_name, district.name))
+        
+    except Exception as err:
+        return ajax_error(err.__str__())
+
+    return HttpResponse( json.dumps(dict(error=False, msg='OK')) )    

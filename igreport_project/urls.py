@@ -20,6 +20,7 @@ from igreport.views.test import check_progress
 from igreport.views.messages import show_messages
 from igreport.views.reports import show_reports, submit_report, accept_report
 from igreport.views.ajax import create_report, get_report, send_sms, demo_send, demo_get
+from igreport.views.ajax import create_district, edit_district
 from igreport.views.sync import sync_report
 from igreport.views.printer import print_preview
 from igreport.views.demo import demo_view
@@ -53,6 +54,8 @@ urlpatterns = patterns('',
     url('^igreports/(?P<report_id>\d*)/print/(?P<model>(igreport|report))/$', print_preview),
     url('^igreports/(?P<report_id>\d*)/sms/$', send_sms),
     url('^igreports/(?P<report_id>\d*)/accept/$', accept_report),
+    url('^districts/create/', create_district),
+    url('^districts/(?P<district_id>\d*)/edit/', edit_district),
     url('^demo/$', demo_view),
     url('^demo/send/$', demo_send),
     url('^demo/get/$', demo_get),

@@ -213,6 +213,55 @@ function send_() {
 	r.send('text='+encodeURIComponent(f.message.value)+'&src='+f.src.value+'&csrfmiddlewaretoken='+getCookie('csrftoken'));	
 }
 
+function adp(id, name) {
+	
+	var title = id>0?'Edit District':'Add New District';
+	var btns = [{text:'Submit', click:function(){ addis(id) }}];
+	
+	var html = '<form id="msgf"><div style="padding:30px 0px 0px 30px">\
+	    <div>\
+			<strong>District Name</strong>:&nbsp;&nbsp;\
+			<input type="text" id="dname" maxlength="50" value="'+name+'" style="width:200px" />\
+	    </div>\
+	</div></form>';				
+	document.getElementById('jqpopup').innerHTML = html;
+	jqpopup(title, btns, 400, 200);	
+};
+
+function addis(id)
+{
+	var name = document.getElementById('dname').value;
+	if(!(/^[a-z]{3,50}$/i.test(name))) {
+		alert('District name not valid');
+		return;
+	}
+	ajax_wait(id>0 ? 'Updating district':'Creating district ..');
+	data = {name: name};
+	if(id > 0) {
+		data['id'] = id;
+	}
+	$.ajax({
+			url: (id>0) ? '/districts/'+id+'/edit/' : '/districts/create/',
+			cache: false,
+			dataType: "json",
+			type: "POST",
+			data: data,
+			
+			error: function(data, x, error) {
+					ajax_done();
+					alert(error);
+			},
+			success: function(result) {
+				ajax_done();
+				if(result.error) {
+					alert(result.msg); // need a show_error() function
+					return;
+				}
+				location.replace(window.location);
+			},
+	});
+}
+
 function rptsetc() {
 	//return; /* color coding things does not look good */;
 	for(var i=0; i<reports.length; i++) {

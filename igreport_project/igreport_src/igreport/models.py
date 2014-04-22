@@ -132,6 +132,14 @@ class Unprocessed(Message):
         verbose_name = 'Unprocessed Message'
         verbose_name_plural = 'Unprocessed Messages'
 
+class District(Location):
+    class Meta:
+        proxy = True
+        verbose_name = 'District'
+        verbose_name_plural = 'Districts'
+        app_label = 'igreport'
+        ordering = ['name']
+
 class MessageLog(Message):
     class Meta:
         proxy = True

@@ -15,6 +15,7 @@ from igreport import util, media
 from igreport.html.admin import ListStyleAdmin
 from igreport.report_admin import ReportAdmin
 from igreport.ui.bulksms import *
+from igreport.ui.districts import DistrictAdmin
 from igreport.unregister import unregister_apps
 
 class DNDListAdmin(admin.ModelAdmin):
@@ -265,7 +266,7 @@ class MessageLogAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
 
         buttons = [ {'label': 'Go To Reports', 'link': '../igreport/'}, {'label': 'Refresh', 'link': '?'} ]
-        context = dict(title='All Messages', buttons=buttons, include_file='igreport/report.html')
+        context = dict(title='All Messages', include_file='igreport/report.html', buttons=buttons)
         return super(MessageLogAdmin, self).changelist_view(request, extra_context=context)
     
     def change_view(self, request, object_id, extra_context=None):
@@ -354,5 +355,6 @@ admin.site.register(Unprocessed, UnprocessedAdmin)
 admin.site.register(DNDList, DNDListAdmin)
 admin.site.register(BulkMessage, BulkMessageAdmin)
 admin.site.register(BulkRecipient, BulkRecipientAdmin)
+admin.site.register(District, DistrictAdmin)
 
 unregister_apps()
